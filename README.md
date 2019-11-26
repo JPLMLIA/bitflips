@@ -15,23 +15,18 @@ BITFLIPS JPL NTR: #45369
 
 # Quick Start
 
-In the JPL Machine Learning group, on analysis (or another 64-bit MLIA
-machine):
+Note: The BITFLIPS script and code in this directory are not
+standalone.  They must be installed as a tool within a Valgrind
+codebase (see below).
+
+The latest version is installed into our MLIA machines at
+`/proj/foamlatte/tps/bin/`.  If you add this directory to your $PATH,
+you will be able to access the Python BITFLIPS wrapper (and the
+BITFLIPS-enhanced valgrind build).  Example usage: 
 
 ```Console
-$ source /proj/foamlatte/setup.sh   # (for (ba)sh), or
-$ source /proj/foamlatte/setup.csh  # (for (t)csh)
+$ bitflips --seed=42 --fault-probability=5 /proj/foamlatte/code/bitflips/test/dotprodd
 ```
-
-Run your program under the BITFLIPS tool extension to Valgrind using
-the Python wrapper, e.g.:
-
-```Console
-$ ./bitflips.py --seed=42 --fault-probability=5 /proj/foamlatte/code/bitflips/test/dotprodd
-```
-
-The Python wrapper "bitflips" is located in `/proj/foamlatte/tps/bin`,
-which is added to your PATH by the FOAM LATTE setup scripts.
 
 The `dotprodd` (double) and `dotprodf` (float) example programs perform a 
 dot product on a 1000-element double or float vector, respectively.
