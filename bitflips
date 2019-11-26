@@ -95,14 +95,13 @@ for arg in sys.argv[1:]:
     arg = "--seed=%d" % random.randint(0, 2**31 - 1)
   args.append(arg)
 
-#/proj/foamlatte/tps/src/valgrind-3.15.0-bitflips-1.0.0
-command = "/proj/foamlatte/tps/src/valgrind-3.15.0-bitflips-1.0.0/coregrind/valgrind --tool=bitflips " + " ".join(args)
+command = "valgrind --tool=bitflips " + " ".join(args)
 print command
 
 stream = os.popen4(command)[1]
 
 for line in stream.readlines():
-  if "BF:" in line:
+  if line.startswith("BF:"):
     tokens = line.split()
     offset = tokens.index("BF:")
     start  = offset + 1
