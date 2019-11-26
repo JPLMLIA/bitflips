@@ -1,4 +1,4 @@
-# BITFLPS: Basic Instrumentation Tool for Fault Localized Injection of Probabilistic SEUs
+# BITFLIPS: Basic Instrumentation Tool for Fault Localized Injection of Probabilistic SEUs
 Version 0.2.0
 
 BITFLIPS is a valgrind extension to simulate radiation-induced
@@ -14,7 +14,6 @@ BITFLIPS JPL NTR: #45369
 
 
 # Quick Start
--------------
 
 In the JPL Machine Learning group, on analysis (or another 64-bit MLIA
 machine):
@@ -46,7 +45,6 @@ and compiled program at all times.
 
 
 # Introduction
---------------
 
 BITFLIPS is software simulator for injecting single event upsets
 (SEUs) into a running computer program.  The software is written as a
@@ -68,7 +66,6 @@ floating-point value by a small or large amount?).
 
 
 # Requirements
---------------
 
 BITFLIPS can run on any desktop class PC.  Its only requirement is the
 Linux operating system.  This limitation results from its dependence
@@ -79,16 +76,14 @@ e.g. analysis, paralysis, mlia-compute1, or mlia-compute2.
 
 
 # Build and Installation
-------------------------
 
 While general build instructions are included, if you have access to
 the JPL Machine Learning machines and the FOAM LATTE project
-directories (under `/proj/foamlatte`), you may want to skip to Section
-3.2 FOAM LATTE Specific Instructions.
+directories (under `/proj/foamlatte`), you may want to skip below to
+"FOAM LATTE Specific Instructions."
 
 
 ## General Instructions
------------------------
 
 BITFLIPS is a Valgrind extension and therefore cannot be compiled or
 run without Valgrind.  First, download and untar a recent version of
@@ -168,7 +163,6 @@ $ make install
 
 
 ## FOAM LATTE Specific Instructions
------------------------------------
 
 The FOAM LATTE project directory (`/proj/foamlatte`) uses Stow package
 management system to maintain and switch between several versions of
@@ -278,7 +272,6 @@ $ ls -l /proj/foamlatte/tps/bin/valgrind
 ```
 
 # Command-line Parameters
--------------------------
 
 The command-line parameters described below are for the BITFLIPS
 Python wrapper program.
@@ -318,7 +311,6 @@ Python wrapper program.
 ```
 
 #  Program Macros
------------------
 
 The macros described in this section result in processor no-ops when
 your program is run standalone (outside of BITFLIPS), so it's
