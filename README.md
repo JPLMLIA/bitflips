@@ -89,11 +89,11 @@ Valgrind 3.2.3):
 $ tar jxvf valgrind-3.2.3.tar.bz2
 ```
 
-Checkout BITFLIPS from CVS into the Valgrind source directory:
+Check out BITFLIPS from github into the Valgrind source directory:
 
 ```Console
 $ cd valgrind-3.2.3
-$ cvs -d /proj/foamlatte/cvsroot co bitflips
+$ git clone git@github-fn.jpl.nasa.gov:MLIA/bitflips.git
 ```
 
 Edit Valgrind's `configure.in` and `Makefile.am` to inform it of the
@@ -180,11 +180,11 @@ $ cd valgrind-3.2.3-bitflips-<version>
 $ ./configure --prefix=/proj/foamlatte/tps/stow/valgrind-3.2.3-bitflips-<version>
 ```
 
-Next, ensure BITFLIPS contains the latest CVS updates:
+Next, ensure BITFLIPS contains the latest updates:
 
 ```Console
 $ cd bitflips
-$ cvs update -d -P
+$ git pull
 ```
 
 and apply your source code updates, including updating the VERSION.txt
