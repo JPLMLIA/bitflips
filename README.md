@@ -1,5 +1,5 @@
 # BITFLPS: Basic Instrumentation Tool for Fault Localized Injection of Probabilistic SEUs
-Version 0.2.0
+Version 1.0.0
 
 BITFLIPS is a valgrind extension to simulate radiation-induced
 bitflips to user-specified exposed memory.
@@ -28,7 +28,7 @@ Run your program under the BITFLIPS tool extension to Valgrind using
 the Python wrapper, e.g.:
 
 ```Console
-$ bitflips --seed=42 --fault-probability=5 /proj/foamlatte/code/bitflips/test/dotprodd
+$ ./bitflips.py --seed=42 --fault-probability=5 /proj/foamlatte/code/bitflips/test/dotprodd
 ```
 
 The Python wrapper "bitflips" is located in `/proj/foamlatte/tps/bin`,
