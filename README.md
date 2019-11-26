@@ -20,9 +20,14 @@ standalone.  They must be installed as a tool within a Valgrind
 codebase (see below).
 
 The latest version is installed into our MLIA machines at
-`/proj/foamlatte/tps/bin/`.  If you add this directory to your $PATH,
-you will be able to access the Python BITFLIPS wrapper (and the
-BITFLIPS-enhanced valgrind build).  Example usage: 
+`/proj/foamlatte/tps/bin/`.  To set up your environment:
+
+```Console
+$ alias valgrind=/proj/foamlatte/tps/bin/valgrind
+$ export VALGRIND_LIB=/proj/foamlatte/tps/lib/valgrind/
+```
+
+Example usage of the Python BITFLIPS wrapper:
 
 ```Console
 $ bitflips --seed=42 --fault-probability=5 /proj/foamlatte/code/bitflips/test/dotprodd
