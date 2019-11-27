@@ -1,4 +1,4 @@
-# BITFLPS: Basic Instrumentation Tool for Fault Localized Injection of Probabilistic SEUs
+# BITFLIPS: Basic Instrumentation Tool for Fault Localized Injection of Probabilistic SEUs
 Version 1.0.0
 
 BITFLIPS is a valgrind extension to simulate radiation-induced
@@ -33,20 +33,29 @@ Example usage of the Python BITFLIPS wrapper:
 $ bitflips --seed=42 --fault-rate=0.5 /proj/foamlatte/code/bitflips/test/dotprodd
 ```
 
-The `dotprodd` (double) and `dotprodf` (float) example programs perform a 
-dot product on a 1000-element double or float vector, respectively.
-The dot product is computed twice, once with SEU fault injection off
-and then again with it on.  The `dotprodd.c` and `dotprodf.c` C programs
-demonstrate how to communicate with the BITFLIPS engine via
-`VALGRIND_BITFLIPS` macros.  The macros result in processor no-ops when
-your program is run standalone (outside of BITFLIPS), so it's
-unobtrusive, convenient, and safe to leave them in your source code
-and compiled program at all times.
+The `dotprodd` example program perform a dot product on a 1000-element
+vector of doubles. The dot product is computed twice, once with SEU
+fault injection off and then again with it on.  Other example programs
+in the same directory include
+* `dotprods`: dot product on a vector of shorts
+* `dotprodi`: dot product on a vector of integers
+* `dotprodf`: dot product on a vector of floats
+
+The `dotprodd.c` C program, and corresponding `.c` programs for each
+of the above executables, demonstrate how to communicate with the
+BITFLIPS engine via `VALGRIND_BITFLIPS` macros.  Note: because these
+programs explicitly turn `VALGRIND_BITFLIPS_ON();`, setting the
+`--inject-faults` parameter in `bitflips` to `no` has no effect.
+
+The BITFLIPS macros result in processor no-ops when your program is
+run standalone (outside of BITFLIPS), so it's unobtrusive, convenient,
+and safe to leave them in your source code and compiled program at all
+times.
 
 
 # Introduction
 
-BITFLIPS is software simulator for injecting single event upsets
+BITFLIPS is a software simulator for injecting single event upsets
 (SEUs) into a running computer program.  The software is written as a
 plugin extension module of the open source
 [Valgrind](http://valgrind.org/) debugging and profiling tool.
