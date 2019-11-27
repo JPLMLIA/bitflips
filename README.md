@@ -1,5 +1,5 @@
 # BITFLIPS: Basic Instrumentation Tool for Fault Localized Injection of Probabilistic SEUs
-Version 1.0.0
+Version 2.0.0
 
 BITFLIPS is a valgrind extension to simulate radiation-induced
 bitflips to user-specified exposed memory.
@@ -97,16 +97,16 @@ directories (under `/proj/foamlatte`), you may want to skip below to
 BITFLIPS is a Valgrind extension and therefore cannot be compiled or
 run without Valgrind.  First, download and untar a recent version of
 Valgrind from [http://valgrind.org/] (BITFLIPS has been tested with
-Valgrind 3.2.3):
+Valgrind 3.15.0):
 
 ```Console
-$ tar jxvf valgrind-3.2.3.tar.bz2
+$ tar jxvf valgrind-3.15.0.tar.bz2
 ```
 
 Check out BITFLIPS from github into the Valgrind source directory:
 
 ```Console
-$ cd valgrind-3.2.3
+$ cd valgrind-3.15.0
 $ git clone git@github-fn.jpl.nasa.gov:MLIA/bitflips.git
 ```
 
@@ -182,7 +182,7 @@ Clone the most recent Valgrind / BITFLIPS source tree, e.g.:
 
 ```Console
 $ cd /proj/foamlatte/tps/src
-$ cp -pr valgrind-3.2.3-bitflips-0.2.0 valgrind-3.2.3-bitflips-<version>
+$ cp -pr valgrind-3.15.0-bitflips-0.2.0 valgrind-3.15.0-bitflips-<version>
 ```
 
 Where <version> is the new version number for the BITFLIPS
@@ -190,8 +190,8 @@ installation you will be creating.  Rerun ./configure with an updated
 --prefix to reflect the new BITFLIPS version number:
 
 ```Console
-$ cd valgrind-3.2.3-bitflips-<version>
-$ ./configure --prefix=/proj/foamlatte/tps/stow/valgrind-3.2.3-bitflips-<version>
+$ cd valgrind-3.15.0-bitflips-<version>
+$ ./configure --prefix=/proj/foamlatte/tps/stow/valgrind-3.15.0-bitflips-<version>
 ```
 
 Next, ensure BITFLIPS contains the latest updates:
@@ -223,7 +223,7 @@ To build Valgrind / BITFLIPS, cd to the root of the Valgrind source
 tree and make:
 
 ```Console
-$ cd valgrind-3.2.3-bitflips-<version>/
+$ cd valgrind-3.15.0-bitflips-<version>/
 $ make
 ```
 
@@ -235,7 +235,7 @@ $ export VALGRIND_LIB=`pwd`/.in_place  # (ba)sh
 $ setenv VALGRIND_LIB `pwd`/.in_place  # (t)csh
 ```
 
-Where `pwd` should expand to valgrind-3.2.3-bitflips-<version>/.  See
+Where `pwd` should expand to valgrind-3.15.0-bitflips-<version>/.  See
 Valgrind's README_DEVELOPERS for more information.
 
 Then run:
@@ -269,15 +269,15 @@ Finally, to install this new version of Valgrind / BITFLIPS to
 ```Console
 $ make install
 $ cd /proj/foamlatte/tps/stow
-$ stow -D valgrind-3.2.3-bitflips-0.2.0  # (uninstall v 0.2.0)
-$ stow    valgrind-3.2.3-bitflips-0.3.0  # (install   v 0.3.0)
+$ stow -D valgrind-3.15.0-bitflips-0.2.0  # (uninstall v 0.2.0)
+$ stow    valgrind-3.15.0-bitflips-0.3.0  # (install   v 0.3.0)
 ```
 
 To see which version of Valgrind / BITFLIPS is currently installed:
 
 ```Console
 $ ls -l /proj/foamlatte/tps/bin/valgrind
-  lrwxrwxrwx  1 bornstei users 50 Jun 13 14:35 /proj/foamlatte/tps/bin/valgrind -> ../stow/valgrind-3.2.3-bitflips-0.2.0/bin/valgrind
+  lrwxrwxrwx  1 bornstei users 50 Jun 13 14:35 /proj/foamlatte/tps/bin/valgrind -> ../stow/valgrind-3.15.0-bitflips-0.2.0/bin/valgrind
 ```
 
 # Command-line Parameters
