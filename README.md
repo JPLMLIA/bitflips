@@ -30,7 +30,7 @@ $ export VALGRIND_LIB=/proj/foamlatte/tps/lib/valgrind/
 Example usage of the Python BITFLIPS wrapper:
 
 ```Console
-$ bitflips --seed=42 --fault-probability=5 /proj/foamlatte/code/bitflips/test/dotprodd
+$ bitflips --seed=42 --fault-rate=0.5 /proj/foamlatte/code/bitflips/test/dotprodd
 ```
 
 The `dotprodd` (double) and `dotprodf` (float) example programs perform a 
@@ -57,7 +57,7 @@ requiring access to the program source code.  If access to the
 original program source code is available, BITFLIPS can offer
 fine-grained control over exactly when and which areas of memory
 (program variables) may be subjected to SEUs.  SEU injection rate is
-controlled by specifying either a fault probability or a fault rate
+controlled by specifying either a fault rate
 based on memory size and radiation exposure time in terms of SEUs per
 byte per second.  BITFLIPS also has the capability to log each SEU it
 injects and, if program source code is available, report the magnitude
@@ -277,15 +277,9 @@ The command-line parameters described below are for the BITFLIPS
 Python wrapper program.
 
 ```
-  --fault-probability=<float>  [0.0 1.0]  (default: 0.05)
-
-    Indicates the probability of triggering a fault on each CPU
-    instruction.
-
   --fault-rate=<float>  [0.0 1.0]  (default: 0)
 
-    This parameter trumps --fault-probability (causing it to be
-    ignored.)  The fault rate specifies the number of SEUs that should
+    This parameter specifies the number of SEUs that should
     occur per byte per instruction.  The actual fault rate achieved
     (<= to the fault rate specified) is output when BITFLIPS
     terminates.
