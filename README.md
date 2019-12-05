@@ -6,7 +6,7 @@ bitflips to user-specified exposed memory.
 
 Author: Ben Bornstein
 
-With contributions from Rob Granat and Kiri Wagstaff
+With contributions from Gary Doran, Rob Granat, and Kiri Wagstaff
 
 Contact: ben.bornstein@jpl.nasa.gov
 
