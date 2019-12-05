@@ -116,6 +116,7 @@ BF_(sizeof) (VgBF_MemType_t type)
     case BITFLIPS_SHORT:
     case BITFLIPS_USHORT:
       bytes = sizeof(short);
+      break;
 
     case BITFLIPS_INT:
     case BITFLIPS_UINT:
