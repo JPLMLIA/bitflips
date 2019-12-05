@@ -33,7 +33,7 @@ Example usage of the Python BITFLIPS wrapper:
 $ bitflips --seed=42 --fault-rate=0.5 /proj/foamlatte/code/bitflips/test/dotprodd
 ```
 
-The `dotprodd` example program perform a dot product on a 1000-element
+The `dotprodd` example program performs a dot product on a 1000-element
 vector of doubles. The dot product is computed twice, once with SEU
 fault injection off and then again with it on.  Other example programs
 in the same directory include
@@ -174,7 +174,7 @@ $ make install
 
 ## FOAM LATTE Specific Instructions
 
-The FOAM LATTE project directory (`/proj/foamlatte`) uses Stow package
+The FOAM LATTE project directory (`/proj/foamlatte`) uses the Stow package
 management system to maintain and switch between several versions of
 Valgrind / BITFLIPS.  This section describes the easiest way to clone,
 modify, and then "install" from an existing installation.
@@ -183,7 +183,7 @@ Clone the most recent Valgrind / BITFLIPS source tree, e.g.:
 
 ```Console
 $ cd /proj/foamlatte/tps/src
-$ cp -pr valgrind-3.15.0-bitflips-0.2.0 valgrind-3.15.0-bitflips-<version>
+$ cp -pr valgrind-3.15.0-bitflips-2.0.0 valgrind-3.15.0-bitflips-<version>
 ```
 
 Where `<version>` is the new version number for the BITFLIPS
@@ -273,7 +273,7 @@ To see which version of Valgrind / BITFLIPS is currently installed:
 
 ```Console
 $ ls -l /proj/foamlatte/tps/bin/valgrind
- lrwxrwxrwx 1 wkiri autonomy 51 Nov 26 12:43  /proj/foamlatte/tps/bin/valgrind -> ../stow/valgrind-3.15.0-bitflips-1.0.0/bin/valgrind
+lrwxrwxrwx 1 wkiri autonomy 51 Dec  4 18:14 /proj/foamlatte/tps/bin/valgrind -> ../stow/valgrind-3.15.0-bitflips-2.0.0/bin/valgrind
 ```
 
 # Command-line Parameters
@@ -362,7 +362,7 @@ For example:
   VALGRIND_BITFLIPS_MEM_OFF(&v1[0]);
 ```
 
-See the example dot-product program and Makefile in:
+See the example dot-product programs and Makefile in:
 
 ```
   /proj/foamlatte/code/bitflips/test/
@@ -370,7 +370,7 @@ See the example dot-product program and Makefile in:
 
 
 NOTE: The BITFLIPS `MEM_ON` and `MEM_OFF` macro parameters require the
-number of rows and columns, data type and memory layout of the program
+number of rows and columns, data type, and memory layout of the program
 variables.  This additional information greatly improves the quality
 of BITFLIPS SEU trace log output.  Because of its numerical
 algorithm-based fault tolerance (ABFT) roots, BITFLIPS is biased
