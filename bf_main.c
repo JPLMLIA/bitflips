@@ -154,7 +154,7 @@ BF_(MemBlock_getCol) (VgBF_MemBlock_t* block, Addr addr)
 {
   UInt offset = (addr - block->start) / BF_(sizeof)(block->type);
 
-  return (block->layout == BITFLIPS_ROW_MAJOR) ?
+  return (block->layout == BITFLIPS_COL_MAJOR) ?
     offset / block->num_rows :
     offset % block->num_rows;
 }
