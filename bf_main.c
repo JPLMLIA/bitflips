@@ -350,12 +350,44 @@ BF_(doFlipBits) (Addr addr, SizeT size, VgBF_MemBlock_t* block)
   UInt row = BF_(MemBlock_getRow)(block, addr);
   UInt col = BF_(MemBlock_getCol)(block, addr);
 
-  if (size == 4)
+  if (size == 1)
   {
-    UInt   mask     = BF_(getFlipMask)( 32, BF_(getFlipSize)() );
-    UInt*  p        = (UInt*) addr;
-    UInt   original = *p;
-    UInt   flipped  = (original ^ mask);
+    UChar  mask     = BF_(getFlipMask)( 8, BF_(getFlipSize)() );
+    UChar* p        = (UChar*) addr;
+    UChar  original = *p;
+    UChar  flipped  = (original ^ mask);
+
+    *p = flipped;
+    FaultCount++;
+
+    if (Verbose)
+    {
+      VG_(message)(Vg_UserMsg, "BF: %s %d %d %d %02x %02x %02x\n",
+                   block->desc, block->type, row, col, original, mask, flipped);
+    }
+  }
+  else if (size == 2)
+  {
+    UShort  mask     = BF_(getFlipMask)( 16, BF_(getFlipSize)() );
+    UShort* p        = (UShort*) addr;
+    UShort  original = *p;
+    UShort  flipped  = (original ^ mask);
+
+    *p = flipped;
+    FaultCount++;
+
+    if (Verbose)
+    {
+      VG_(message)(Vg_UserMsg, "BF: %s %d %d %d %04x %04x %04x\n",
+                   block->desc, block->type, row, col, original, mask, flipped);
+    }
+  }
+  else if (size == 4)
+  {
+    UInt  mask     = BF_(getFlipMask)( 32, BF_(getFlipSize)() );
+    UInt* p        = (UInt*) addr;
+    UInt  original = *p;
+    UInt  flipped  = (original ^ mask);
 
     *p = flipped;
     FaultCount++;
@@ -368,10 +400,10 @@ BF_(doFlipBits) (Addr addr, SizeT size, VgBF_MemBlock_t* block)
   }
   else if (size == 8)
   {
-    UWord  mask    = BF_(getFlipMask)( 64, BF_(getFlipSize)() );
-    UWord* p       = (UWord*) addr;
-    UWord original = *p;
-    UWord flipped  = (original ^ mask);
+    UWord  mask     = BF_(getFlipMask)( 64, BF_(getFlipSize)() );
+    UWord* p        = (UWord*) addr;
+    UWord  original = *p;
+    UWord  flipped  = (original ^ mask);
 
     *p = flipped;
     FaultCount++;
