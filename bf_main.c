@@ -21,7 +21,7 @@
 #include "pub_tool_machine.h"
 #include "pub_tool_mallocfree.h"
 
-#include "VEX/priv/main/vex_util.h"
+#include "VEX/priv/main_util.h"
 #include "VEX/pub/libvex_guest_x86.h"
 
 #include "bitflips.h"
@@ -40,7 +40,7 @@ typedef struct _VgBF_MemBlock_t
   SizeT             num_elems;
   float             num_kilobytes;
   float             num_faults_pending;
-  Char*             desc;
+  HChar*            desc;
   VgBF_MemType_t    type;
   VgBF_MemOrder_t   layout;
   ExeContext*       where;
@@ -182,16 +182,16 @@ static void
 BF_(MemOn) (ThreadId tid, UWord* arg)
 {
   UInt             bytes;
-  VgBF_MemBlock_t* block = VG_(malloc)( sizeof(VgBF_MemBlock_t) );
+  VgBF_MemBlock_t* block = VG_(malloc)( "bf", sizeof(VgBF_MemBlock_t) );
 
 
   block->start     = arg[1];
   block->num_rows  = arg[2];
   block->num_cols  = arg[3];
-  block->desc      = VG_(strdup)((Char *) arg[4]);
+  block->desc      = VG_(strdup)( "bf", (HChar *) arg[4] );
   block->type      = arg[5] & (BITFLIPS_ROW_MAJOR - 1);
   block->layout    = arg[5] & (BITFLIPS_ROW_MAJOR + BITFLIPS_COL_MAJOR);
-  block->where     = VG_(record_ExeContext)(tid);
+  block->where     = VG_(record_ExeContext)(tid, 0);
   block->next      = 0;
 
 
@@ -361,7 +361,7 @@ BF_(doFlipBits) (Addr addr, SizeT size, VgBF_MemBlock_t* block)
 
     if (Verbose)
     {
-      VG_(message)(Vg_UserMsg, "BF: %s %d %d %d %08x %08x %08x",
+      VG_(message)(Vg_UserMsg, "BF: %s %d %d %d %08x %08x %08x\n",
                    block->desc, block->type, row, col, original, mask, flipped);
     }
   }
@@ -377,7 +377,7 @@ BF_(doFlipBits) (Addr addr, SizeT size, VgBF_MemBlock_t* block)
 
     if (Verbose)
     {
-      VG_(message)(Vg_UserMsg, "BF: %s %d %d %d %016lx %016lx %016lx",
+      VG_(message)(Vg_UserMsg, "BF: %s %d %d %d %016lx %016lx %016lx\n",
                    block->desc, block->type, row, col, original, mask, flipped);
     }
   }
@@ -446,7 +446,7 @@ BF_(doLoad) (Addr addr, SizeT size)
 
 
 static void
-BF_(addFaultCheck) (IRBB* bb)
+BF_(addFaultCheck) (IRSB* bb)
 {
   IRExpr** argv = mkIRExprVec_0();
   IRDirty* di   = unsafeIRDirty_0_N(  0
@@ -454,13 +454,13 @@ BF_(addFaultCheck) (IRBB* bb)
 				    , VG_(fnptr_to_fnentry)(&BF_(doFaultCheck))
                                     , argv );
 
-  addStmtToIRBB(bb, IRStmt_Dirty(di));
+  addStmtToIRSB(bb, IRStmt_Dirty(di));
 }
 
 
 #if 0
 static void
-BF_(addLoadCheck) (IRBB* bb, IRExpr* dAddr, Int dSize)
+BF_(addLoadCheck) (IRSB* bb, IRExpr* dAddr, Int dSize)
 {
   IRExpr** argv = mkIRExprVec_2(dAddr, mkIRExpr_HWord(dSize));
   IRDirty* di   = unsafeIRDirty_0_N(  2
@@ -477,7 +477,7 @@ BF_(addLoadCheck) (IRBB* bb, IRExpr* dAddr, Int dSize)
   }
   */
 
-  addStmtToIRBB(bb, IRStmt_Dirty(di));
+  addStmtToIRSB(bb, IRStmt_Dirty(di));
 }
 #endif  /* #if 0 */
 
@@ -485,21 +485,23 @@ BF_(addLoadCheck) (IRBB* bb, IRExpr* dAddr, Int dSize)
 /**
  * Main instrumentation function
  */
-static IRBB*
+static IRSB*
 BF_(instrument) (  VgCallbackClosure* closure
-                 , IRBB*              bbIn
-                 , VexGuestLayout*    layout
-                 , VexGuestExtents*   vge
+                 , IRSB*              bbIn
+                 , const VexGuestLayout*    layout
+                 , const VexGuestExtents*   vge
+                 , const VexArchInfo*       archinfo_host
                  , IRType             gWordTy
                  , IRType             hWordTy )
 {
   Int n;
 
-  IRBB* bbOut      = emptyIRBB();
-  bbOut->tyenv     = dopyIRTypeEnv(bbIn->tyenv);
-  bbOut->next      = dopyIRExpr(bbIn->next);
+  IRSB* bbOut      = emptyIRSB();
+  bbOut->tyenv     = deepCopyIRTypeEnv(bbIn->tyenv);
+  bbOut->next      = deepCopyIRExpr(bbIn->next);
   bbOut->jumpkind  = bbIn->jumpkind;
-
+  bbOut->offsIP    = bbIn->offsIP;
+  
 
   for (n = 0; n < bbIn->stmts_used; ++n)
   {
@@ -521,7 +523,7 @@ BF_(instrument) (  VgCallbackClosure* closure
     }
     */
 
-    addStmtToIRBB(bbOut, statement);
+    addStmtToIRSB(bbOut, statement);
   }
 
   return bbOut;
@@ -547,7 +549,7 @@ BF_(handle_client_request) (ThreadId tid, UWord* arg, UWord *ret)
     case VG_USERREQ__BITFLIPS_ON:
       if (Verbose)
       {
-        VG_(message)(Vg_UserMsg, "VALGRIND_BITFLIPS_ON");
+        VG_(message)(Vg_UserMsg, "VALGRIND_BITFLIPS_ON\n");
       }
       FaultInjection = True;
       *ret           = 0;
@@ -556,7 +558,7 @@ BF_(handle_client_request) (ThreadId tid, UWord* arg, UWord *ret)
     case VG_USERREQ__BITFLIPS_OFF:
       if (Verbose)
       {
-        VG_(message)(Vg_UserMsg, "VALGRIND_BITFLIPS_OFF");
+        VG_(message)(Vg_UserMsg, "VALGRIND_BITFLIPS_OFF\n");
       }
       FaultInjection = False;
       *ret           = 0;
@@ -565,7 +567,7 @@ BF_(handle_client_request) (ThreadId tid, UWord* arg, UWord *ret)
   case VG_USERREQ__BITFLIPS_MEM_ON:
     if (Verbose)
     {
-      VG_(message)(Vg_UserMsg, "VALGRIND_BITFLIPS_MEM_ON:  %s", arg[4]);
+      VG_(message)(Vg_UserMsg, "VALGRIND_BITFLIPS_MEM_ON:  %s\n", (char*)arg[4]);
     }
     BF_(MemOn)(tid, arg);
     *ret = 0;
@@ -574,7 +576,7 @@ BF_(handle_client_request) (ThreadId tid, UWord* arg, UWord *ret)
   case VG_USERREQ__BITFLIPS_MEM_OFF:
     if (Verbose)
     {
-      VG_(message)(Vg_UserMsg, "VALGRIND_BITFLIPS_MEM_OFF: %s", arg[4]);
+      VG_(message)(Vg_UserMsg, "VALGRIND_BITFLIPS_MEM_OFF: %s\n", (char*)arg[4]);
     }
     BF_(MemOff)(arg);
     *ret = 0;
@@ -595,17 +597,20 @@ BF_(handle_client_request) (ThreadId tid, UWord* arg, UWord *ret)
 
 
 static Bool
-BF_(command_line_options) (Char* arg)
+BF_(command_line_options) (const HChar* arg)
 {
   UInt  rate = 0;
 
 
-  VG_NUM_CLO      (arg, "--fault-rate"   , rate           )
-  else VG_BOOL_CLO(arg, "--inject-faults", FaultInjection )
-  else VG_NUM_CLO (arg, "--seed"         , Seed           )
-  else VG_BOOL_CLO(arg, "--verbose"      , Verbose        )
+  if      VG_NUM_CLO(arg, "--fault-rate"    , rate           ) {}
+  else if VG_BOOL_CLO(arg, "--inject-faults", FaultInjection ) {}
+  else if VG_NUM_CLO (arg, "--seed"         , Seed           ) {}
+  else if VG_BOOL_CLO(arg, "--verbose"      , Verbose        ) {}
+  else {
+    return False;
+  }
 
-  if (0 == VG_(strncmp_ws)(arg, "--fault-rate", 12))
+  if (0 == VG_(strncmp)(arg, "--fault-rate", 12))
   {
     UInt* p = (UInt*) &FaultRate;
     VG_(memcpy)(p, &rate, 4);
@@ -642,17 +647,18 @@ BF_(finalize) (Int exitcode)
   UInt* rate_p = (UInt*) &rate;
 
   VG_(message)(Vg_UserMsg,
-         "---------------------------------------------------------");
-  VG_(message)(Vg_UserMsg, "Total Bit Flips: %d", FaultCount);
-  VG_(message)(Vg_UserMsg, "Total Instructions: %d", InstructionCount);
-  VG_(message)(Vg_UserMsg, "Fault Rate: %08x", *rate_p);
+         "---------------------------------------------------------\n");
+  VG_(message)(Vg_UserMsg, "Total Bit Flips: %d\n", FaultCount);
+  VG_(message)(Vg_UserMsg, "Total Instructions: %lu\n",
+               (long unsigned int)InstructionCount);
+  VG_(message)(Vg_UserMsg, "Fault Rate: %08x\n", *rate_p);
   VG_(message)(Vg_UserMsg,
-         "---------------------------------------------------------");
+         "---------------------------------------------------------\n");
 }
 
 
 static void
-BF_(clo_init_post) (void)
+BF_(post_clo_init) (void)
 {  
   UInt*       rate    = (UInt*) &FaultRate;
   const char* inject  = FaultInjection ? "yes" : "no";
@@ -667,17 +673,17 @@ BF_(clo_init_post) (void)
 
 
 static void
-BF_(clo_init_pre) (void)
+BF_(pre_clo_init) (void)
 {
   VG_(details_name)            ("BITFLIPS");
-  VG_(details_version)         ("1.0.0");
+  VG_(details_version)         ("2.0.0");
   VG_(details_description)     ("Injects SEUs into a running program");
   VG_(details_copyright_author)("Ben Bornstein");
   VG_(details_bug_reports_to)  ("ben.bornstein@jpl.nasa.gov");
 
   VG_(basic_tool_funcs)
   (
-     BF_(clo_init_post)
+     BF_(post_clo_init)
    , BF_(instrument)
    , BF_(finalize)
   );
@@ -693,4 +699,4 @@ BF_(clo_init_pre) (void)
 }
 
 
-VG_DETERMINE_INTERFACE_VERSION( BF_(clo_init_pre) )
+VG_DETERMINE_INTERFACE_VERSION( BF_(pre_clo_init) )
