@@ -603,9 +603,9 @@ BF_(command_line_options) (const HChar* arg)
   UInt  rate = 0;
 
 
-  if      VG_NUM_CLO(arg, "--fault-rate"    , rate           ) {}
+  if      VG_INT_CLO (arg, "--fault-rate"   , rate           ) {}
   else if VG_BOOL_CLO(arg, "--inject-faults", FaultInjection ) {}
-  else if VG_NUM_CLO (arg, "--seed"         , Seed           ) {}
+  else if VG_INT_CLO (arg, "--seed"         , Seed           ) {}
   else if VG_BOOL_CLO(arg, "--verbose"      , Verbose        ) {}
   else {
     return False;
