@@ -165,6 +165,7 @@ Then simple follow the standard Valgrind build and installation
 instructions.  In brief:
 
 ```Console
+$ ./autogen.sh
 $ ./configure
 $ make
 $ make install
@@ -185,9 +186,9 @@ $ cd /proj/foamlatte/tps/src
 $ cp -pr valgrind-3.15.0-bitflips-0.2.0 valgrind-3.15.0-bitflips-<version>
 ```
 
-Where <version> is the new version number for the BITFLIPS
-installation you will be creating.  Rerun ./configure with an updated
---prefix to reflect the new BITFLIPS version number:
+Where `<version>` is the new version number for the BITFLIPS
+installation you will be creating.  Rerun `./configure` with an updated
+`--prefix` to reflect the new BITFLIPS version number:
 
 ```Console
 $ cd valgrind-3.15.0-bitflips-<version>
@@ -201,20 +202,20 @@ $ cd bitflips
 $ git pull
 ```
 
-and apply your source code updates, including updating the VERSION.txt
-file and changing the BITFLIPS bf_main.c source code to reflect the
-new version number.  To update the version number in bf_main.c, change
-the version string in passed to the VG_(details_version) macro (toward
+and apply your source code updates, including updating the `VERSION.txt`
+file and changing the BITFLIPS `bf_main.c` source code to reflect the
+new version number.  To update the version number in `bf_main.c`, change
+the version string in passed to the `VG_(details_version)` macro (toward
 the end of the .c file) from something like:
 
 ```
-  VG_(details_version)("0.2.0");
+  VG_(details_version)("2.0.0");
 ```
 
 to something like:
 
 ```
-  VG_(details_version)("0.3.0");
+  VG_(details_version)("2.1.0");
 ```
 
 Save your changes.
@@ -235,8 +236,9 @@ $ export VALGRIND_LIB=`pwd`/.in_place  # (ba)sh
 $ setenv VALGRIND_LIB `pwd`/.in_place  # (t)csh
 ```
 
-Where `pwd` should expand to valgrind-3.15.0-bitflips-<version>/.  See
-Valgrind's README_DEVELOPERS for more information.
+Where `pwd` should expand to the location of 
+`valgrind-3.15.0-bitflips-<version>/`.  
+See Valgrind's `README_DEVELOPERS` for more information.
 
 Then run:
 
@@ -244,20 +246,14 @@ Then run:
 $ coregrind/valgrind --tool=bitflips ...
 ```
 
-If you would like to use test with the BITFLIPS Python wrapper, make a
-local copy:
-
-```Console
-$ cp -p /proj/foamlatte/tps/bin/bitflips .
-```
-
-and change the word "valgrind" in the line:
+If you would like to use test with the BITFLIPS Python wrapper, 
+edit the `bitflips` script to change the word "valgrind" in the line:
 
 ```
   command = "valgrind --tool=bitflips " + " ".join(args)
 ```
 
-to "coregrind/valgrind":
+to "coregrind/valgrind" (relative to your valgrind checkout):
 
 ```
   command = "coregrind/valgrind --tool=bitflips " + " ".join(args)
@@ -269,15 +265,15 @@ Finally, to install this new version of Valgrind / BITFLIPS to
 ```Console
 $ make install
 $ cd /proj/foamlatte/tps/stow
-$ stow -D valgrind-3.15.0-bitflips-0.2.0  # (uninstall v 0.2.0)
-$ stow    valgrind-3.15.0-bitflips-0.3.0  # (install   v 0.3.0)
+$ stow -D valgrind-3.15.0-bitflips-2.0.0  # (uninstall v 2.0.0)
+$ stow    valgrind-3.15.0-bitflips-2.1.0  # (install   v 2.1.0)
 ```
 
 To see which version of Valgrind / BITFLIPS is currently installed:
 
 ```Console
 $ ls -l /proj/foamlatte/tps/bin/valgrind
-  lrwxrwxrwx  1 bornstei users 50 Jun 13 14:35 /proj/foamlatte/tps/bin/valgrind -> ../stow/valgrind-3.15.0-bitflips-0.2.0/bin/valgrind
+ lrwxrwxrwx 1 wkiri autonomy 51 Nov 26 12:43  /proj/foamlatte/tps/bin/valgrind -> ../stow/valgrind-3.15.0-bitflips-1.0.0/bin/valgrind
 ```
 
 # Command-line Parameters
