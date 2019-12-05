@@ -352,7 +352,7 @@ BF_(doFlipBits) (Addr addr, SizeT size, VgBF_MemBlock_t* block)
 
   if (size == 4)
   {
-    UWord  mask     = BF_(getFlipMask)( 32, BF_(getFlipSize)() );
+    UInt   mask     = BF_(getFlipMask)( 32, BF_(getFlipSize)() );
     UInt*  p        = (UInt*) addr;
     UInt   original = *p;
     UInt   flipped  = (original ^ mask);
