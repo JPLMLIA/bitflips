@@ -666,10 +666,10 @@ BF_(post_clo_init) (void)
   const char* verbose = Verbose        ? "yes" : "no";
 
 
-  VG_(message)(Vg_UserMsg, "fault-rate: %08x" , *rate   );
-  VG_(message)(Vg_UserMsg, "inject-faults: %s", inject  );
-  VG_(message)(Vg_UserMsg, "seed: %d"         , Seed    );
-  VG_(message)(Vg_UserMsg, "verbose: %s"      , verbose );
+  VG_(message)(Vg_UserMsg, "fault-rate: %08x\n" , *rate   );
+  VG_(message)(Vg_UserMsg, "inject-faults: %s\n", inject  );
+  VG_(message)(Vg_UserMsg, "seed: %d\n"         , Seed    );
+  VG_(message)(Vg_UserMsg, "verbose: %s\n"      , verbose );
 }
 
 
@@ -679,7 +679,7 @@ BF_(pre_clo_init) (void)
   VG_(details_name)            ("BITFLIPS");
   VG_(details_version)         ("2.0.0");
   VG_(details_description)     ("Injects SEUs into a running program");
-  VG_(details_copyright_author)("Ben Bornstein");
+  VG_(details_copyright_author)("Ben Bornstein and Kiri Wagstaff");
   VG_(details_bug_reports_to)  ("ben.bornstein@jpl.nasa.gov");
 
   VG_(basic_tool_funcs)
