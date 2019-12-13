@@ -116,26 +116,27 @@ presence of the BITFLIPS module.  In `configure.in`, add
 `AC_CONFIG_FILES`directive, changing from:
 
 ```
-  AC_CONFIG_FILES(
+  AC_CONFIG_FILES([
      Makefile 
-     valgrind.spec
+     VEX/Makefile:Makefile.vex.in
      ...
-     none/tests/x86/Makefile
-     none/docs/Makefile
-  )
+     shared/Makefile
+     solaris/Makefile
+  ])
 ```
 
 to:
 
 ```
-  AC_CONFIG_FILES(
+  AC_CONFIG_FILES([
      Makefile 
-     valgrind.spec
+     VEX/Makefile:Makefile.vex.in
      ...
-     none/tests/x86/Makefile
-     none/docs/Makefile
+     shared/Makefile
+     solaris/Makefile
      bitflips/Makefile
-  )
+     bitflips/tests/Makefile
+  ])
 ```
 
 In `Makefile.am`, add "bitflips" to the list of TOOLS, changing from:
