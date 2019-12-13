@@ -111,8 +111,9 @@ $ git clone git@github-fn.jpl.nasa.gov:MLIA/bitflips.git
 ```
 
 Edit Valgrind's `configure.ac` and `Makefile.am` to inform it of the
-presence of the BITFLIPS module.  In `configure.in`, add
-"bitflips/Makefile" to the end of the (long) list of Makefiles in the
+presence of the BITFLIPS module.  In `configure.ac`, add
+"bitflips/Makefile" and "bitflips/tests/Makefile"
+to the end of the (long) list of Makefiles in the
 `AC_CONFIG_FILES`directive, changing from:
 
 ```
