@@ -30,22 +30,22 @@ $ export VALGRIND_LIB=/proj/foamlatte/tps/lib/valgrind/
 Example usage of the Python BITFLIPS wrapper:
 
 ```Console
-$ bitflips --seed=42 --fault-rate=0.5 /proj/foamlatte/code/bitflips/test/dotprodd
+$ bitflips --seed=42 --fault-rate=0.5 --inject-faults=no /proj/foamlatte/code/bitflips/test/dotprodd
 ```
 
 The `dotprodd` example program performs a dot product on a 1000-element
 vector of doubles. The dot product is computed twice, once with SEU
-fault injection off and then again with it on.  Other example programs
-in the same directory include
+fault injection off and then again with it on.  This is achieved by the
+specification of the initial state `--inject-faults=no`; if this is
+omitted, it defaults to `yes` and both computations will be affected.
+Other example programs in the same directory include
 * `dotprods`: dot product on a vector of shorts
 * `dotprodi`: dot product on a vector of integers
 * `dotprodf`: dot product on a vector of floats
 
 The `dotprodd.c` C program, and corresponding `.c` programs for each
 of the above executables, demonstrate how to communicate with the
-BITFLIPS engine via `VALGRIND_BITFLIPS` macros.  Note: because these
-programs explicitly turn `VALGRIND_BITFLIPS_ON();`, setting the
-`--inject-faults` parameter in `bitflips` to `no` has no effect.
+BITFLIPS engine via `VALGRIND_BITFLIPS` macros. 
 
 The BITFLIPS macros result in processor no-ops when your program is
 run standalone (outside of BITFLIPS), so it's unobtrusive, convenient,
