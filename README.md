@@ -110,13 +110,13 @@ $ cd valgrind-3.15.0
 $ git clone git@github-fn.jpl.nasa.gov:MLIA/bitflips.git
 ```
 
-Edit Valgrind's `configure.in` and `Makefile.am` to inform it of the
+Edit Valgrind's `configure.ac` and `Makefile.am` to inform it of the
 presence of the BITFLIPS module.  In `configure.in`, add
 "bitflips/Makefile" to the end of the (long) list of Makefiles in the
-AC_OUTPUT directive, changing from:
+`AC_CONFIG_FILES`directive, changing from:
 
 ```
-  AC_OUTPUT(
+  AC_CONFIG_FILES(
      Makefile 
      valgrind.spec
      ...
@@ -128,7 +128,7 @@ AC_OUTPUT directive, changing from:
 to:
 
 ```
-  AC_OUTPUT(
+  AC_CONFIG_FILES(
      Makefile 
      valgrind.spec
      ...
