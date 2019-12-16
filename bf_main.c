@@ -21,7 +21,6 @@
 #include "pub_tool_machine.h"
 #include "pub_tool_mallocfree.h"
 
-#include "VEX/priv/main_util.h"
 #include "VEX/pub/libvex_guest_x86.h"
 
 #include "bitflips.h"
