@@ -25,9 +25,13 @@
 #include "VEX/pub/libvex_guest_x86.h"
 
 #include "bitflips.h"
+#include "bf_poisson.h"
 
 
 #define BF_(str)    VGAPPEND(vgBitFlips_,str)
+
+// Assumes the VG_(random) implementation returns UInt (unsigned 32-bit int)
+#define VG_RAND_MAX 0xffffffff
 
 
 typedef struct _VgBF_MemBlock_t
@@ -93,6 +97,12 @@ static UInt
 BF_(randomInt) (UInt* seed, UInt n)
 {
   return VG_(random)(seed) % n;
+}
+
+static double
+BF_(randomUniformDouble) (void)
+{
+  return ((double)VG_(random)(&Seed)) / ((double)VG_RAND_MAX);
 }
 
 

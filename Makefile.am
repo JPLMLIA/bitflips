@@ -20,12 +20,14 @@ include $(top_srcdir)/Makefile.tool.am
 
 pkginclude_HEADERS = bitflips.h
 
+noinst_HEADERS = bf_poisson.h bf_math.h
+
 noinst_PROGRAMS  = bitflips-@VGCONF_ARCH_PRI@-@VGCONF_OS@
 if VGCONF_HAVE_PLATFORM_SEC
 noinst_PROGRAMS += bitflips-@VGCONF_ARCH_SEC@-@VGCONF_OS@
 endif
 
-BITFLIPS_SOURCES_COMMON = bf_main.c
+BITFLIPS_SOURCES_COMMON = bf_main.c bf_poisson.c bf_math.c
 
 bitflips_@VGCONF_ARCH_PRI@_@VGCONF_OS@_SOURCES      = \
 	$(BITFLIPS_SOURCES_COMMON)
