@@ -288,8 +288,7 @@ Python wrapper program.
 
     This parameter specifies the number of SEUs that should
     occur per byte per instruction.  The actual fault rate achieved
-    (<= to the fault rate specified) is output when BITFLIPS
-    terminates.
+    is output when BITFLIPS terminates.
 
   --inject-faults=yes|no  (default: yes)
 
