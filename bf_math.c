@@ -4,7 +4,7 @@
  *
  * Developed at SunSoft, a Sun Microsystems, Inc. business.
  * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice 
+ * software is freely granted, provided that this notice
  * is preserved.
  * ====================================================
  *
@@ -23,7 +23,7 @@
 #define ONE 1.0
 #define ZERO 0.0
 
-static const double 
+static const double
     halF[2] = {0.5,-0.5,},
     twom1000 = 9.33263618503218878990e-302,     /* 2**-1000=0x01700000,0*/
     o_threshold =  7.09782712893383973096e+02,  /* 0x40862E42, 0xFEFA39EF */
@@ -54,9 +54,9 @@ static const double
 /*
  * log(x) returns the logrithm of x.
  *
- * Method :                  
- *   1. Argument Reduction: find k and f such that 
-   *            x = 2^k * (1+f), 
+ * Method :
+ *   1. Argument Reduction: find k and f such that
+ *              x = 2^k * (1+f),
  *       where  sqrt(2)/2 < 1+f < sqrt(2) .
  *
  *   2. Approximation of log(1+f).
@@ -72,22 +72,22 @@ static const double
  *      (the values of Lg1 to Lg7 are listed in the program)
  *    and
  *        |      2          14          |     -58.45
- *        | Lg1*s +...+Lg7*s    -  R(z) | <= 2 
+ *        | Lg1*s +...+Lg7*s    -  R(z) | <= 2
  *        |                             |
  *    Note that 2s = f - s*f = f - hfsq + s*hfsq, where hfsq = f*f/2.
  *    In order to guarantee error in log below 1ulp, we compute log
  *    by
  *        log(1+f) = f - s*(f - R)    (if f is not too large)
  *        log(1+f) = f - (hfsq - s*(hfsq+R)).    (better accuracy)
- *    
- *    3. Finally,  log(x) = k*ln2 + log(1+f).  
+ *
+ *    3. Finally,  log(x) = k*ln2 + log(1+f).
  *                = k*ln2_hi+(f-(hfsq-(s*(hfsq+R)+k*ln2_lo)))
- *       Here ln2 is split into two floating point number: 
+ *       Here ln2 is split into two floating point number:
  *            ln2_hi + ln2_lo,
  *       where n*ln2_hi is always exact for |n| < 2000.
  *
  * Special cases:
- *    log(x) is NaN with signal if x < 0 (including -INF) ; 
+ *    log(x) is NaN with signal if x < 0 (including -INF) ;
  *    log(+INF) is +INF; log(0) is -INF with signal;
  *    log(NaN) is that NaN with no signal.
  *
@@ -96,9 +96,9 @@ static const double
  *    1 ulp (unit in the last place).
  *
  * Constants:
- * The hexadecimal values are the intended ones for the following 
- * constants. The decimal values may be used, provided that the 
- * compiler will convert from decimal to binary accurately enough 
+ * The hexadecimal values are the intended ones for the following
+ * constants. The decimal values may be used, provided that the
+ * compiler will convert from decimal to binary accurately enough
  * to produce the hexadecimal values shown.
  */
 double log(double x) {
@@ -111,13 +111,18 @@ double log(double x) {
 
     k=0;
     if (hx < 0x00100000) {            /* x < 2**-1022  */
-        if (((hx&0x7fffffff)|lx)==0) 
-        return -two54/ZERO;        /* log(+-0)=-inf */
-        if (hx<0) return (x-x)/ZERO;    /* log(-#) = NaN */
+        if (((hx&0x7fffffff)|lx)==0) {
+            return -two54/ZERO;        /* log(+-0)=-inf */
+        }
+        if (hx<0) {
+            return (x-x)/ZERO;    /* log(-#) = NaN */
+        }
         k -= 54; x *= two54; /* subnormal number, scale up x */
         hx = __HI(x);        /* high word of x */
-    } 
-    if (hx >= 0x7ff00000) return x+x;
+    }
+    if (hx >= 0x7ff00000) {
+        return x+x;
+    }
     k += (hx>>20)-1023;
     hx &= 0x000fffff;
     i = (hx+0x95f64)&0x100000;
@@ -135,41 +140,47 @@ double log(double x) {
         }
         R = f*f*(0.5-0.33333333333333333*f);
         if(k==0) {
-            return f-R; 
+            return f-R;
         } else {
             dk=(double)k;
             return dk*ln2HI[0]-((R-dk*ln2LO[0])-f);
         }
     }
-     s = f/(2.0+f); 
+    s = f/(2.0+f);
     dk = (double)k;
     z = s*s;
     i = hx-0x6147a;
     w = z*z;
     j = 0x6b851-hx;
-    t1= w*(Lg2+w*(Lg4+w*Lg6)); 
-    t2= z*(Lg1+w*(Lg3+w*(Lg5+w*Lg7))); 
+    t1= w*(Lg2+w*(Lg4+w*Lg6));
+    t2= z*(Lg1+w*(Lg3+w*(Lg5+w*Lg7)));
     i |= j;
     R = t2+t1;
     if(i>0) {
         hfsq=0.5*f*f;
-        if(k==0) return f-(hfsq-s*(hfsq+R)); else
-             return dk*ln2HI[0]-((hfsq-(s*(hfsq+R)+dk*ln2LO[0]))-f);
+        if(k==0) {
+            return f-(hfsq-s*(hfsq+R));
+        } else {
+            return dk*ln2HI[0]-((hfsq-(s*(hfsq+R)+dk*ln2LO[0]))-f);
+        }
     } else {
-        if(k==0) return f-s*(f-R); else
-             return dk*ln2HI[0]-((s*(f-R)-dk*ln2LO[0])-f);
+        if(k==0) {
+            return f-s*(f-R);
+        } else {
+            return dk*ln2HI[0]-((s*(f-R)-dk*ln2LO[0])-f);
+        }
     }
 }
 
-/* 
+/*
  * sqrt(x) returns correctly rounded sqrt.
  *           ------------------------------------------
  *           |  Use the hardware sqrt if you have one |
  *           ------------------------------------------
- * Method: 
- *   Bit by bit method using integer arithmetic. (Slow, but portable) 
+ * Method:
+ *   Bit by bit method using integer arithmetic. (Slow, but portable)
  *   1. Normalization
- *    Scale x to y in [1,4) with even powers of 2: 
+ *    Scale x to y in [1,4) with even powers of 2:
  *    find an integer k such that  1 <= (y=x*2^(2k)) < 4, then
  *        sqrt(x) = 2^k * sqrt(y)
  *   2. Bit by bit computation
@@ -178,9 +189,9 @@ double log(double x) {
  *                                 i+1         2
  *        s  = 2*q , and    y  =  2   * ( y - q  ).        (1)
  *         i      i          i                 i
- *                                                        
- *    To compute q    from q , one checks whether 
- *                i+1       i                       
+ *
+ *    To compute q    from q , one checks whether
+ *                i+1       i
  *
  *                  -(i+1) 2
  *            (q + 2      ) <= y.            (2)
@@ -190,12 +201,12 @@ double log(double x) {
  *                           i+1   i             i+1   i
  *
  *    With some algebric manipulation, it is not difficult to see
- *    that (2) is equivalent to 
+ *    that (2) is equivalent to
  *                              -(i+1)
  *            s  +  2       <= y            (3)
  *             i                i
  *
- *    The advantage of (3) is that s  and y  can be computed by 
+ *    The advantage of (3) is that s  and y  can be computed by
  *                                  i      i
  *    the following recurrence formula:
  *        if (3) is false
@@ -207,10 +218,10 @@ double log(double x) {
  *                        -i                      -(i+1)
  *        s      =  s  + 2  ,  y    = y  -  s  - 2          (5)
  *          i+1      i          i+1    i     i
- *                
- *    One may easily use induction to prove (4) and (5). 
+ *
+ *    One may easily use induction to prove (4) and (5).
  *    Note. Since the left hand side of (3) contain only i+2 bits,
- *          it does not necessary to do a full (53-bit) comparison 
+ *          it does not necessary to do a full (53-bit) comparison
  *          in (3).
  *   3. Final rounding
  *    After generating the 53 bits result, we compute one more bit.
@@ -220,7 +231,7 @@ double log(double x) {
  *    The rounding mode can be detected by checking whether
  *    huge + tiny is equal to huge, and whether huge - tiny is
  *    equal to huge for some floating point number "huge" and "tiny".
- *        
+ *
  * Special cases:
  *    sqrt(+-0) = +-0     ... exact
  *    sqrt(inf) = inf
@@ -238,7 +249,7 @@ double sqrt(double x) {
     return sqrt_val;
 #else
     double z;
-    int sign = (int)0x80000000; 
+    int sign = (int)0x80000000;
     unsigned r,t1,s1,ix1,q1;
     int ix0,s0,q,m,t,i;
 
@@ -246,24 +257,29 @@ double sqrt(double x) {
     ix1 = __LO(x);        /* low word of x */
 
     /* take care of Inf and NaN */
-    if((ix0&0x7ff00000)==0x7ff00000) {            
+    if((ix0&0x7ff00000)==0x7ff00000) {
         return x*x+x;        /* sqrt(NaN)=NaN, sqrt(+inf)=+inf
                        sqrt(-inf)=sNaN */
-    } 
+    }
     /* take care of zero */
     if(ix0<=0) {
-        if(((ix0&(~sign))|ix1)==0) return x;/* sqrt(+-0) = +-0 */
-        else if(ix0<0)
-        return (x-x)/(x-x);        /* sqrt(-ve) = sNaN */
+        if(((ix0&(~sign))|ix1)==0) {
+            return x;/* sqrt(+-0) = +-0 */
+        } else if(ix0<0) {
+            return (x-x)/(x-x);        /* sqrt(-ve) = sNaN */
+        }
     }
     /* normalize x */
     m = (ix0>>20);
     if(m==0) {                /* subnormal x */
         while(ix0==0) {
-        m -= 21;
-        ix0 |= (ix1>>11); ix1 <<= 21;
+            m -= 21;
+            ix0 |= (ix1>>11);
+            ix1 <<= 21;
         }
-        for(i=0;(ix0&0x00100000)==0;i++) ix0<<=1;
+        for(i=0;(ix0&0x00100000)==0;i++) {
+            ix0<<=1;
+        }
         m -= i-1;
         ix0 |= (ix1>>(32-i));
         ix1 <<= i;
@@ -283,12 +299,12 @@ double sqrt(double x) {
     r = 0x00200000;        /* r = moving bit from right to left */
 
     while(r!=0) {
-        t = s0+r; 
-        if(t<=ix0) { 
-        s0   = t+r; 
-        ix0 -= t; 
-        q   += r; 
-        } 
+        t = s0+r;
+        if(t<=ix0) {
+            s0   = t+r;
+            ix0 -= t;
+            q   += r;
+        }
         ix0 += ix0 + ((ix1&sign)>>31);
         ix1 += ix1;
         r>>=1;
@@ -296,15 +312,19 @@ double sqrt(double x) {
 
     r = sign;
     while(r!=0) {
-        t1 = s1+r; 
+        t1 = s1+r;
         t  = s0;
-        if((t<ix0)||((t==ix0)&&(t1<=ix1))) { 
-        s1  = t1+r;
-        if(((t1&sign)==sign)&&(s1&sign)==0) s0 += 1;
-        ix0 -= t;
-        if (ix1 < t1) ix0 -= 1;
-        ix1 -= t1;
-        q1  += r;
+        if((t<ix0)||((t==ix0)&&(t1<=ix1))) {
+            s1  = t1+r;
+            if(((t1&sign)==sign)&&(s1&sign)==0) {
+                s0 += 1;
+            }
+            ix0 -= t;
+            if (ix1 < t1) {
+                ix0 -= 1;
+            }
+            ix1 -= t1;
+            q1  += r;
         }
         ix0 += ix0 + ((ix1&sign)>>31);
         ix1 += ix1;
@@ -316,17 +336,23 @@ double sqrt(double x) {
         z = ONE-TINY; /* trigger inexact flag */
         if (z>=ONE) {
             z = ONE+TINY;
-            if (q1==(unsigned)0xffffffff) { q1=0; q += 1;}
+            if (q1==(unsigned)0xffffffff) {
+                q1=0; q += 1;
+            }
         else if (z>ONE) {
-            if (q1==(unsigned)0xfffffffe) q+=1;
-            q1+=2; 
+            if (q1==(unsigned)0xfffffffe) {
+                q+=1;
+            }
+            q1+=2;
         } else
-                q1 += (q1&1);
+            q1 += (q1&1);
         }
     }
     ix0 = (q>>1)+0x3fe00000;
     ix1 =  q1>>1;
-    if ((q&1)==1) ix1 |= sign;
+    if ((q&1)==1) {
+        ix1 |= sign;
+    }
     ix0 += (m <<20);
     __HI(z) = ix0;
     __LO(z) = ix1;
@@ -342,36 +368,36 @@ double sqrt(double x) {
  *      Reduce x to an r so that |r| <= 0.5*ln2 ~ 0.34658.
  *    Given x, find r and integer k such that
  *
- *               x = k*ln2 + r,  |r| <= 0.5*ln2.  
+ *               x = k*ln2 + r,  |r| <= 0.5*ln2.
  *
- *      Here r will be represented as r = hi-lo for better 
+ *      Here r will be represented as r = hi-lo for better
  *    accuracy.
  *
  *   2. Approximation of exp(r) by a special rational function on
  *    the interval [0,0.34658]:
  *    Write
  *        R(r**2) = r*(exp(r)+1)/(exp(r)-1) = 2 + r*r/6 - r**4/360 + ...
- *      We use a special Remes algorithm on [0,0.34658] to generate 
- *     a polynomial of degree 5 to approximate R. The maximum error 
+ *      We use a special Remes algorithm on [0,0.34658] to generate
+ *     a polynomial of degree 5 to approximate R. The maximum error
  *    of this polynomial approximation is bounded by 2**-59. In
  *    other words,
  *        R(z) ~ 2.0 + P1*z + P2*z**2 + P3*z**3 + P4*z**4 + P5*z**5
  *      (where z=r*r, and the values of P1 to P5 are listed below)
  *    and
  *        |                  5          |     -59
- *        | 2.0+P1*z+...+P5*z   -  R(z) | <= 2 
+ *        | 2.0+P1*z+...+P5*z   -  R(z) | <= 2
  *        |                             |
  *    The computation of exp(r) thus becomes
  *                       2*r
  *        exp(r) = 1 + -------
  *                      R - r
- *                           r*R1(r)    
+ *                           r*R1(r)
  *               = 1 + r + ----------- (for better accuracy)
  *                          2 - R1(r)
  *    where
-     *                     2       4             10
+ *                         2       4             10
  *        R1(r) = r - (P1*r  + P2*r  + ... + P5*r   ).
- *    
+ *
  *   3. Scale back to obtain exp(x):
  *    From step 1, we have
  *       exp(x) = 2^k * exp(r)
@@ -386,13 +412,13 @@ double sqrt(double x) {
  *    1 ulp (unit in the last place).
  *
  * Misc. info.
- *    For IEEE double 
+ *    For IEEE double
  *        if x >  7.09782712893383973096e+02 then exp(x) overflow
  *        if x < -7.45133219101941108420e+02 then exp(x) underflow
  *
  * Constants:
- * The hexadecimal values are the intended ones for the following 
- * constants. The decimal values may be used, provided that the 
+ * The hexadecimal values are the intended ones for the following
+ * constants. The decimal values may be used, provided that the
  * compiler will convert from decimal to binary accurately enough
  * to produce the hexadecimal values shown.
  */
@@ -420,7 +446,7 @@ double exp(double x) {
     }
 
     /* argument reduction */
-    if(hx > 0x3fd62e42) {        /* if  |x| > 0.5 ln2 */ 
+    if(hx > 0x3fd62e42) {        /* if  |x| > 0.5 ln2 */
         if(hx < 0x3FF0A2B2) {    /* and |x| < 1.5 ln2 */
             hi = x-ln2HI[xsb];
             lo = ln2LO[xsb];
@@ -432,7 +458,7 @@ double exp(double x) {
             lo = t*ln2LO[0];
         }
         x  = hi - lo;
-    } 
+    }
     else if(hx < 0x3e300000)  {    /* when |x|<2**-28 */
         if(HUGE+x>ONE) { return ONE+x; } /* trigger inexact */
     }
@@ -444,7 +470,7 @@ double exp(double x) {
     t  = x*x;
     c  = x - t*(P1+t*(P2+t*(P3+t*(P4+t*P5))));
     if(k==0) {
-        return ONE-((x*c)/(c-2.0)-x); 
+        return ONE-((x*c)/(c-2.0)-x);
     } else {
         y = ONE-((lo-(x*c)/(2.0-c))-hi);
     }
@@ -472,35 +498,38 @@ double floor(double x) {
     j0 = ((i0>>20)&0x7ff)-0x3ff;
     if(j0<20) {
         if(j0<0) {     /* raise inexact if x != 0 */
-        if(HUGE+x>0.0) {/* return 0*sign(x) if |x|<1 */
-            if(i0>=0) {i0=i1=0;} 
-            else if(((i0&0x7fffffff)|i1)!=0)
-            { i0=0xbff00000;i1=0;}
-        }
+            if(HUGE+x>0.0) {/* return 0*sign(x) if |x|<1 */
+                if(i0>=0) {
+                    i0=i1=0;
+                } else if(((i0&0x7fffffff)|i1)!=0) {
+                    i0=0xbff00000;i1=0;
+                }
+            }
         } else {
-        i = (0x000fffff)>>j0;
-        if(((i0&i)|i1)==0) { return x; } /* x is integral */
-        if(HUGE+x>0.0) {    /* raise inexact flag */
-            if(i0<0) i0 += (0x00100000)>>j0;
-            i0 &= (~i); i1=0;
-        }
+            i = (0x000fffff)>>j0;
+            if(((i0&i)|i1)==0) { return x; } /* x is integral */
+            if(HUGE+x>0.0) {    /* raise inexact flag */
+                if(i0<0) i0 += (0x00100000)>>j0;
+                i0 &= (~i); i1=0;
+            }
         }
     } else if (j0>51) {
-        if(j0==0x400) {return x+x;}    /* inf or NaN */
+        if(j0==0x400) { return x+x; }    /* inf or NaN */
         else { return x; }        /* x is integral */
     } else {
         i = ((unsigned)(0xffffffff))>>(j0-20);
         if((i1&i)==0) { return x; }   /* x is integral */
         if(HUGE+x>0.0) {         /* raise inexact flag */
-        if(i0<0) {
-            if(j0==20) { i0+=1; }
-            else {
-            j = i1+(1<<(52-j0));
-            if(j<i1) { i0 +=1; }    /* got a carry */
-            i1=j;
+            if(i0<0) {
+                if(j0==20) {
+                    i0+=1;
+                } else {
+                    j = i1+(1<<(52-j0));
+                    if(j<i1) { i0 +=1; }    /* got a carry */
+                    i1=j;
+                }
             }
-        }
-        i1 &= (~i);
+            i1 &= (~i);
         }
     }
     __HI(x) = i0;
