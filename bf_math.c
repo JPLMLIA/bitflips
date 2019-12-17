@@ -52,7 +52,7 @@ static const double
     Lg7 = 1.479819860511658591e-01;  /* 3FC2F112 DF3E5244 */
 
 /*
- * log(x) returns the logrithm of x.
+ * log(x) returns the logarithm of x.
  *
  * Method :
  *   1. Argument Reduction: find k and f such that
