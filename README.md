@@ -68,7 +68,7 @@ fine-grained control over exactly when and which areas of memory
 (program variables) may be subjected to SEUs.  SEU injection rate is
 controlled by specifying either a fault rate
 based on memory size and radiation exposure time in terms of SEUs per
-byte per second.  BITFLIPS also has the capability to log each SEU it
+kilobyte per instruction.  BITFLIPS also has the capability to log each SEU it
 injects and, if program source code is available, report the magnitude
 of the SEU on the program variable (i.e. did an SEU change a
 floating-point value by a small or large amount?).
@@ -284,10 +284,10 @@ The command-line parameters described below are for the BITFLIPS
 Python wrapper program.
 
 ```
-  --fault-rate=<float>  [0.0 1.0]  (default: 0)
+  --fault-rate=<float>  [0.0 inf)  (default: 0)
 
     This parameter specifies the number of SEUs that should
-    occur per byte per instruction.  The actual fault rate achieved
+    occur per kilobyte per instruction.  The actual fault rate achieved
     is output when BITFLIPS terminates.
 
   --inject-faults=yes|no  (default: yes)
@@ -380,5 +380,3 @@ and M-by-N matrices of floats and doubles.  For memory containing
 scalar values, simply set both the number of rows and columns to one
 (1) and use a layout of `BITFLIPS_ROW_MAJOR` (C's default memory
 layout).
-
-

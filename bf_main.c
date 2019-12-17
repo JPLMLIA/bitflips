@@ -422,8 +422,8 @@ BF_(doFlipBits) (Addr addr, SizeT size, VgBF_MemBlock_t* block)
 
 
 /**
- * If FaultInjection is True, inject approximately FaultRate SEUs / (KB * s)
- * across eligible memory blocks.
+ * If FaultInjection is True, inject approximately FaultRate
+ * SEUs / (KB * instruction) across eligible memory blocks.
  *
  * This function is instrumented (called) in the user's program before
  * every instruction.
@@ -660,7 +660,7 @@ BF_(usage) (void)
 {
    VG_(printf)
    ( 
-     "    --fault-rate=<int>      (units: faults per KB * sec)\n"
+     "    --fault-rate=<int>      (units: faults per KB-instruction)\n"
      "    --inject-faults=yes|no  (default: yes)\n"
      "    --seed=<int>            (default: 42)\n"
      "    --verbose=yes|no        (default: no)\n\n"
