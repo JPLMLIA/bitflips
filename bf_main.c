@@ -21,13 +21,16 @@
 #include "pub_tool_machine.h"
 #include "pub_tool_mallocfree.h"
 
-#include "VEX/priv/main_util.h"
 #include "VEX/pub/libvex_guest_x86.h"
 
 #include "bitflips.h"
+#include "bf_poisson.h"
 
 
 #define BF_(str)    VGAPPEND(vgBitFlips_,str)
+
+// Assumes the VG_(random) implementation returns UInt (unsigned 32-bit int)
+#define VG_RAND_MAX 0xffffffff
 
 
 typedef struct _VgBF_MemBlock_t
@@ -39,7 +42,6 @@ typedef struct _VgBF_MemBlock_t
   SizeT             num_cols;
   SizeT             num_elems;
   double            num_kilobytes;
-  double            num_faults_pending;
   HChar*            desc;
   VgBF_MemType_t    type;
   VgBF_MemOrder_t   layout;
@@ -93,6 +95,12 @@ static UInt
 BF_(randomInt) (UInt* seed, UInt n)
 {
   return VG_(random)(seed) % n;
+}
+
+static double
+BF_(randomUniformDouble) (void)
+{
+  return ((double)VG_(random)(&Seed)) / ((double)VG_RAND_MAX);
 }
 
 
@@ -201,8 +209,6 @@ BF_(MemOn) (ThreadId tid, UWord* arg)
   block->num_bytes     = block->num_elems * bytes;
   block->num_kilobytes = block->num_bytes / 1000.0;
   block->end           = block->start + block->num_bytes - 1;
-
-  block->num_faults_pending = 0.0;
 
   if (MemBlockHead == 0)
   {
@@ -427,33 +433,31 @@ BF_(doFaultCheck) (void)
 {
   ++InstructionCount;
 
-  if (FaultInjection == True)
-  {
-    VgBF_MemBlock_t* block = MemBlockHead;
+  if (FaultInjection == True) {
 
-    while (block != 0)
-    {
-      double pending      = block->num_faults_pending;
-      double fraction     = block->num_kilobytes;
-      double total_faults = (FaultRate * fraction) + pending;
-      UInt   whole_faults = (UInt) total_faults;
-      UInt   size         = BF_(sizeof)(block->type);
+    VgBF_MemBlock_t* block;
+    for (block = MemBlockHead; block != 0; block = block->next) {
 
-      block->num_faults_pending  = total_faults - whole_faults;
-      KilobyteFlux              += block->num_kilobytes;
+      // The Poisson rate parameter is expected SEUs in this period of 1
+      // instruction, which is obtained by multiplying FaultRate
+      // (SEU / (KB * instruction)) by the number of KB in the block and
+      // implicltly by the 1 instruction
+      double lambda = FaultRate * block->num_kilobytes;
+      UInt n_faults = random_poisson(lambda, BF_(randomUniformDouble));
+      UInt size = BF_(sizeof)(block->type);
 
-      while (whole_faults > 0)
-      {
-        UInt n    = BF_(randomInt)(&Seed, block->num_elems);
+      // Record that we've observed this block
+      KilobyteFlux += block->num_kilobytes;
+
+      UInt f;
+      for (f = 0; f < n_faults; f++) {
+        UInt n = BF_(randomInt)(&Seed, block->num_elems);
         Addr addr = block->start + (n * size);
-
         BF_(doFlipBits)(addr, size, block);
-
-        --whole_faults;
       }
 
-      block = block->next;
     }
+
   }
 }
 
