@@ -287,30 +287,28 @@ BF_(Addr_getMemBlock) (Addr addr)
 static UWord
 BF_(getFlipMask) (UInt width, UInt flips)
 {
-  UInt   b, r;
-  UInt   rand;
-  UWord  mask = 0;
-
-
-  /* choose which bits to flip */
-  for (b = 0; b < flips; ++b)
-  {
-    rand = VG_(random)(&Seed) % (width - b);
-
-    /* remove already chosen bits. */
-    for (r = 0; r < rand; ++r)
-    {
-      if ((mask >> r) & 1)
-      {
-        ++rand;
-      }
+    if (flips == 1) {
+        // Special case for likely case of only one flip: just shift 1 into a
+        // random position
+        return (1UL << (VG_(random)(&Seed) % width));
     }
-    
-    /* set bit in fault mask */
-    mask |= (1 << rand);
-  }
 
-  return mask;
+    // Otherwise, start with a mask that has `flips` bits set to 1 in the LSB
+    UWord mask = ~((~0UL) << flips);
+
+    // Fischer-Yates Shuffle to shuffle the flipped bits
+    // Bit Swap:
+    // https://www.geeksforgeeks.org/how-to-swap-two-bits-in-a-given-integer/
+    UWord xor;
+    UChar i, swap, bit1, bit2;
+    for (i = width - 1; i > 0; i--) {
+        swap = VG_(random)(&Seed) % (i + 1);
+        bit1 = (mask >> swap) & 1;
+        bit2 = (mask >> i) & 1;
+        xor = bit1 ^ bit2;
+        mask ^= ((xor << swap) | (xor << i));
+    }
+    return mask;
 }
 
 
