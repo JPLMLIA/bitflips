@@ -12,53 +12,16 @@ Contact: ben.bornstein@jpl.nasa.gov
 
 BITFLIPS JPL NTR: #45369
 
-
-# Quick Start
-
-Note: The BITFLIPS script and code in this directory are not
-standalone.  They must be installed as a tool within a Valgrind
-codebase (see below).
-
-The latest version is installed into our MLIA machines at
-`/proj/foamlatte/tps/bin/`.  To set up your environment:
-
-```Console
-$ alias valgrind=/proj/foamlatte/tps/bin/valgrind
-$ export VALGRIND_LIB=/proj/foamlatte/tps/lib/valgrind/
-```
-
-Example usage of the Python BITFLIPS wrapper:
-
-```Console
-$ bitflips --seed=42 --fault-rate=0.5 --inject-faults=no /proj/foamlatte/code/bitflips/test/dotprodd
-```
-
-The `dotprodd` example program performs a dot product on a 1000-element
-vector of doubles. The dot product is computed twice, once with SEU
-fault injection off and then again with it on.  This is achieved by the
-specification of the initial state `--inject-faults=no`; if this is
-omitted, it defaults to `yes` and both computations will be affected.
-Other example programs in the same directory include
-* `dotprods`: dot product on a vector of shorts
-* `dotprodi`: dot product on a vector of integers
-* `dotprodf`: dot product on a vector of floats
-
-The `dotprodd.c` C program, and corresponding `.c` programs for each
-of the above executables, demonstrate how to communicate with the
-BITFLIPS engine via `VALGRIND_BITFLIPS` macros. 
-
-The BITFLIPS macros result in processor no-ops when your program is
-run standalone (outside of BITFLIPS), so it's unobtrusive, convenient,
-and safe to leave them in your source code and compiled program at all
-times.
-
-
 # Introduction
 
 BITFLIPS is a software simulator for injecting single event upsets
 (SEUs) into a running computer program.  The software is written as a
 plugin extension module of the open source
 [Valgrind](http://valgrind.org/) debugging and profiling tool.
+
+Note: The BITFLIPS script and code in this directory are not
+standalone.  They must be installed as a tool within a Valgrind
+codebase (see below).
 
 BITFLIPS can inject SEUs into any program which can be run on the
 Linux operating system, without modifying the original program or
@@ -80,19 +43,7 @@ BITFLIPS can run on any desktop class PC.  Its only requirement is the
 Linux operating system.  This limitation results from its dependence
 on Valgrind.
 
-In the JPL Machine Learning group any 64-bit Linux machine will do,
-e.g. analysis, paralysis, mlia-compute1, or mlia-compute2.
-
-
 # Build and Installation
-
-While general build instructions are included, if you have access to
-the JPL Machine Learning machines and the FOAM LATTE project
-directories (under `/proj/foamlatte`), you may want to skip below to
-"FOAM LATTE Specific Instructions."
-
-
-## General Instructions
 
 BITFLIPS is a Valgrind extension and therefore cannot be compiled or
 run without Valgrind.  First, download and untar a recent version of
@@ -107,7 +58,7 @@ Check out BITFLIPS from github into the Valgrind source directory:
 
 ```Console
 $ cd valgrind-3.15.0
-$ git clone git@github-fn.jpl.nasa.gov:MLIA/bitflips.git
+$ git clone git@github.com:JPLMLIA/BITFLIPS.git
 ```
 
 Edit Valgrind's `configure.ac` and `Makefile.am` to inform it of the
@@ -163,7 +114,7 @@ to:
                   bitflips
 ```
 
-Then simple follow the standard Valgrind build and installation
+Then simply follow the standard Valgrind build and installation
 instructions.  In brief:
 
 ```Console
@@ -173,110 +124,33 @@ $ make
 $ make install
 ```
 
+# Example usage
 
-## FOAM LATTE Specific Instructions
-
-The FOAM LATTE project directory (`/proj/foamlatte`) uses the Stow package
-management system to maintain and switch between several versions of
-Valgrind / BITFLIPS.  This section describes the easiest way to clone,
-modify, and then "install" from an existing installation.
-
-Clone the most recent Valgrind / BITFLIPS source tree, e.g.:
+Example usage of the Python BITFLIPS wrapper:
 
 ```Console
-$ cd /proj/foamlatte/tps/src
-$ cp -pr valgrind-3.15.0-bitflips-2.0.0 valgrind-3.15.0-bitflips-<version>
+$ bitflips --seed=42 --fault-rate=0.5 --inject-faults=no /proj/foamlatte/code/bitflips/test/dotprodd
 ```
 
-Where `<version>` is the new version number for the BITFLIPS
-installation you will be creating.  Rerun `./configure` with an updated
-`--prefix` to reflect the new BITFLIPS version number:
+The `dotprodd` example program performs a dot product on a 1000-element
+vector of doubles. The dot product is computed twice, once with SEU
+fault injection off and then again with it on.  This is achieved by the
+specification of the initial state `--inject-faults=no`; if this is
+omitted, it defaults to `yes` and both computations will be affected.
+Other example programs in the same directory include
+* `dotprods`: dot product on a vector of shorts
+* `dotprodi`: dot product on a vector of integers
+* `dotprodf`: dot product on a vector of floats
 
-```Console
-$ cd valgrind-3.15.0-bitflips-<version>
-$ ./configure --prefix=/proj/foamlatte/tps/stow/valgrind-3.15.0-bitflips-<version>
-```
+The `dotprodd.c` C program, and corresponding `.c` programs for each
+of the above executables, demonstrate how to communicate with the
+BITFLIPS engine via `VALGRIND_BITFLIPS` macros. 
 
-Next, ensure BITFLIPS contains the latest updates:
+The BITFLIPS macros result in processor no-ops when your program is
+run standalone (outside of BITFLIPS), so it's unobtrusive, convenient,
+and safe to leave them in your source code and compiled program at all
+times.
 
-```Console
-$ cd bitflips
-$ git pull
-```
-
-and apply your source code updates, including updating the `VERSION.txt`
-file and changing the BITFLIPS `bf_main.c` source code to reflect the
-new version number.  To update the version number in `bf_main.c`, change
-the version string in passed to the `VG_(details_version)` macro (toward
-the end of the .c file) from something like:
-
-```
-  VG_(details_version)("2.0.0");
-```
-
-to something like:
-
-```
-  VG_(details_version)("2.1.0");
-```
-
-Save your changes.
-
-To build Valgrind / BITFLIPS, cd to the root of the Valgrind source
-tree and make:
-
-```Console
-$ cd valgrind-3.15.0-bitflips-<version>/
-$ make
-```
-
-To run BITFLIPS in order to test out your changes (before installing
-to `/proj/foamlatte/tps/bin` for everyone to use):
-
-```Console
-$ export VALGRIND_LIB=`pwd`/.in_place  # (ba)sh
-$ setenv VALGRIND_LIB `pwd`/.in_place  # (t)csh
-```
-
-Where `pwd` should expand to the location of 
-`valgrind-3.15.0-bitflips-<version>/`.  
-See Valgrind's `README_DEVELOPERS` for more information.
-
-Then run:
-
-```Console
-$ coregrind/valgrind --tool=bitflips ...
-```
-
-If you would like to use test with the BITFLIPS Python wrapper, 
-edit the `bitflips` script to change the word "valgrind" in the line:
-
-```
-  command = "valgrind --tool=bitflips " + " ".join(args)
-```
-
-to "coregrind/valgrind" (relative to your valgrind checkout):
-
-```
-  command = "coregrind/valgrind --tool=bitflips " + " ".join(args)
-```
-
-Finally, to install this new version of Valgrind / BITFLIPS to
-`/proj/foamlatte/tps`:
-
-```Console
-$ make install
-$ cd /proj/foamlatte/tps/stow
-$ stow -D valgrind-3.15.0-bitflips-2.0.0  # (uninstall v 2.0.0)
-$ stow    valgrind-3.15.0-bitflips-2.1.0  # (install   v 2.1.0)
-```
-
-To see which version of Valgrind / BITFLIPS is currently installed:
-
-```Console
-$ ls -l /proj/foamlatte/tps/bin/valgrind
-lrwxrwxrwx 1 wkiri autonomy 51 Dec  4 18:14 /proj/foamlatte/tps/bin/valgrind -> ../stow/valgrind-3.15.0-bitflips-2.0.0/bin/valgrind
-```
 
 # Command-line Parameters
 
@@ -320,7 +194,6 @@ and compiled program at all times.
 To turn fault injection on and off in your code:
 
 ```
-  /* compile with gcc -I/proj/foamlatte/tps/include */
   #include <valgrind/bitflips.h>
 ```
 
