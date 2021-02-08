@@ -20,6 +20,8 @@ include $(top_srcdir)/Makefile.tool.am
 
 pkginclude_HEADERS = bitflips.h
 
+bin_SCRIPTS = bitflips
+
 noinst_HEADERS = bf_poisson.h bf_math.h
 
 noinst_PROGRAMS  = bitflips-@VGCONF_ARCH_PRI@-@VGCONF_OS@
