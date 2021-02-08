@@ -83,7 +83,7 @@ static float             FaultRate        = 0;
 static Bool              FaultInjection   = True;
 static ULong             InstructionCount = 0;
 static double            KilobyteFlux     = 0.0;
-static UInt              Seed             = 42;
+static UInt              RandomState      = 42;
 static Bool              Verbose          = False;
 static VgBF_MemBlock_t*  MemBlockHead     = 0;
 
@@ -100,7 +100,7 @@ BF_(randomInt) (UInt* seed, UInt n)
 static double
 BF_(randomUniformDouble) (void)
 {
-  return ((double)VG_(random)(&Seed)) / ((double)VG_RAND_MAX);
+  return ((double)VG_(random)(&RandomState)) / ((double)VG_RAND_MAX);
 }
 
 
@@ -296,7 +296,7 @@ BF_(getFlipMask) (UInt width, UInt flips)
     if (flips == 1) {
         // Special case for likely case of only one flip: just shift 1 into a
         // random position
-        return (1UL << (VG_(random)(&Seed) % width));
+        return (1UL << (VG_(random)(&RandomState) % width));
     }
 
     // Otherwise, start with a mask that has `flips` bits set to 1 in the LSB
@@ -308,7 +308,7 @@ BF_(getFlipMask) (UInt width, UInt flips)
     UWord xor;
     UChar i, swap, bit1, bit2;
     for (i = width - 1; i > 0; i--) {
-        swap = VG_(random)(&Seed) % (i + 1);
+        swap = VG_(random)(&RandomState) % (i + 1);
         bit1 = (mask >> swap) & 1;
         bit2 = (mask >> i) & 1;
         xor = bit1 ^ bit2;
@@ -326,7 +326,7 @@ BF_(getFlipSize) (void)
 {
   UInt n;
   UInt bits = 0;
-  UInt rand = VG_(random)(&Seed) % 100;
+  UInt rand = VG_(random)(&RandomState) % 100;
   UInt size = sizeof(BitFlipDensity) / sizeof(BitFlipDensity[0]);
 
 
@@ -451,7 +451,7 @@ BF_(doFaultCheck) (void)
 
       UInt f;
       for (f = 0; f < n_faults; f++) {
-        UInt n = BF_(randomInt)(&Seed, block->num_elems);
+        UInt n = BF_(randomInt)(&RandomState, block->num_elems);
         Addr addr = block->start + (n * size);
         BF_(doFlipBits)(addr, size, block);
       }
@@ -639,7 +639,7 @@ BF_(command_line_options) (const HChar* arg)
 
   if      VG_INT_CLO (arg, "--fault-rate"   , rate           ) {}
   else if VG_BOOL_CLO(arg, "--inject-faults", FaultInjection ) {}
-  else if VG_INT_CLO (arg, "--seed"         , Seed           ) {}
+  else if VG_INT_CLO (arg, "--seed"         , RandomState    ) {}
   else if VG_BOOL_CLO(arg, "--verbose"      , Verbose        ) {}
   else {
     return False;
@@ -702,7 +702,7 @@ BF_(post_clo_init) (void)
 
   VG_(message)(Vg_UserMsg, "fault-rate: %08x\n" , *rate   );
   VG_(message)(Vg_UserMsg, "inject-faults: %s\n", inject  );
-  VG_(message)(Vg_UserMsg, "seed: %d\n"         , Seed    );
+  VG_(message)(Vg_UserMsg, "seed: %d\n"         , RandomState);
   VG_(message)(Vg_UserMsg, "verbose: %s\n"      , verbose );
 }
 
