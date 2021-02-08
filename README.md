@@ -63,7 +63,7 @@ $ git clone git@github.com:JPLMLIA/BITFLIPS.git
 
 Edit Valgrind's `configure.ac` and `Makefile.am` to inform it of the
 presence of the BITFLIPS module.  In `configure.ac`, add
-"bitflips/Makefile" and "bitflips/tests/Makefile"
+"bitflips/Makefile", "bitflips/tests/Makefile", and "bitflips/bitflips"
 to the end of the (long) list of Makefiles in the
 `AC_CONFIG_FILES`directive, changing from:
 
@@ -88,6 +88,7 @@ to:
      solaris/Makefile
      bitflips/Makefile
      bitflips/tests/Makefile
+     bitflips/bitflips
   ])
 ```
 
